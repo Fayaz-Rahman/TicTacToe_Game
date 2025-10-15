@@ -1,61 +1,80 @@
 import java.util.Scanner;
 
 public class TicTacToe3 {
-    
-        static String[] board = new String[9];
-        static String turn = "x";
 
+    static String[] board = new String[9];
+    static String turn = "X";
 
-     public static void main(String[] args) {
-        Scanner in = new Scanner (System.in);
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
         String winner = null;
-            
-        for(int i = 0; i <9; i ++){
-                board[i] = String.valueOf(i + 1);
-            }
+
+        // Initialize board
+        for (int i = 0; i < 9; i++) {
+            board[i] = String.valueOf(i + 1);
+        }
+
         System.out.println("Welcome to 3x3 Tic Tac Toe.");
         printBoard();
-            
-        while(winner == null){
-        System.out.println("Its" + turn + " 's turn. Enter a slot number to place " + turn + " in:");
-        
-        if(!in.hasNext()){
-            System.out.println("Invalid input. Please enter a number.");
-            in.next();
-            continue;
-        }
 
-        int move = in.nextInt();
-        if(move > 9 || move < 1){
-            System.out.println("Invalid move. choose between 1 and 9.");
-            continue;
-        }
+        while (winner == null) {
+            System.out.println("It's " + turn + "'s turn. Enter a slot number to place " + turn + " in:");
 
-        if(!board[move -1].equals(String.valueOf(move))){
-            System.out.println("Slot already taken. Try again.");
-            continue;
-        }
-
-        board[move -1] = turn;
-        printBoard();
-        winner = checkWinner();
-
-        if(winner == null){
-            turn = turn.equals("X")?"O" :"X";
-        }
+            if (!in.hasNextInt()) {
+                System.out.println("Invalid input. Please enter a number.");
+                in.next(); // discard invalid input
+                continue;
             }
 
-            System.out.println(winner.equals(draw) ? "Its a draw!" :"congratulations!" + winner + "wins");
-            in.close();
-        }
+            int move = in.nextInt();
+            if (move < 1 || move > 9) {
+                System.out.println("Invalid move. Choose between 1 and 9.");
+                continue;
+            }
 
-        static void printBoard(){
-            System.out.println("\n /---/---/---/");
-            for(int i =0; i <9; i+=3){
-                System.out.println("|" + board[i] + " | " + board[i+1] + " | " + board[i+2] + " |");
-                System.out.println("/-----------/");
+            if (!board[move - 1].equals(String.valueOf(move))) {
+                System.out.println("Slot already taken. Try again.");
+                continue;
+            }
+
+            board[move - 1] = turn;
+            printBoard();
+            winner = checkWinner();
+
+            if (winner == null) {
+                turn = turn.equals("X") ? "O" : "X";
             }
         }
-        
 
+        System.out.println(winner.equals("draw") ? "It's a draw!" : "Congratulations! " + winner + " wins!");
+        in.close();
+    }
+
+    static void printBoard() {
+        System.out.println("\n|---|---|---|");
+        for (int i = 0; i < 9; i += 3) {
+            System.out.println("| " + board[i] + " | " + board[i + 1] + " | " + board[i + 2] + " |");
+            System.out.println("|-----------|");
+        }
+    }
+
+    static String checkWinner() {
+        int[][] winPatterns = {
+            {0, 1, 2}, {3, 4, 5}, {6, 7, 8}, // rows
+            {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, // columns
+            {0, 4, 8}, {2, 4, 6}             // diagonals
+        };
+
+        for (int[] pattern : winPatterns) {
+            String line = board[pattern[0]] + board[pattern[1]] + board[pattern[2]];
+            if (line.equals("XXX")) return "X";
+            if (line.equals("OOO")) return "O";
+        }
+
+        for (String cell : board) {
+            if (cell.matches("\\d")) return null; // game still in progress
+        }
+
+        return "draw";
+    }
 }
